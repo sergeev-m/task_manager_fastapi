@@ -1,0 +1,36 @@
+version: "3.9"
+
+x-app: &build
+  build: .
+  restart: always
+
+x-env: &env
+  env_file:
+    - .env
+
+services:
+  back:
+    <<: [*build, *env]
+    container_name: task_manager_back
+    expose:
+      - 8000
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    <<: *env
+    container_name: task_manager_db
+    image: postgres:15-alpine3.18
+    expose:
+      - 5432
+    healthcheck:
+      test: pg_isready -d ${POSTGRES_DB} -U ${POSTGRES_USER}
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - task_manager_pg:/var/lib/postgresql/data
+
+volumes:
+  task_manager_pg:
