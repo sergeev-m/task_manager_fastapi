@@ -1,3 +1,4 @@
+from typing import Generator
 from asyncio import current_task
 from contextlib import asynccontextmanager
 
@@ -22,7 +23,7 @@ class AsyncDatabaseSession:
         )
 
     @asynccontextmanager
-    async def session(self):
+    async def session(self) -> AsyncSession:
         session: AsyncSession = self._session_factory()
         try:
             yield session

@@ -12,3 +12,5 @@ class UserService(BaseService):
 
 
 user_service = UserService(repository=user_repository)
+
+# todo login by username or email
