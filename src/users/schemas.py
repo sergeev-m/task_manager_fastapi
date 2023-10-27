@@ -1,8 +1,9 @@
 from datetime import datetime
 from uuid import UUID
-from pydantic import BaseModel, EmailStr, PositiveInt, Field
-from annotated_types import Le
+from pydantic import BaseModel, EmailStr, Field
 from typing import Annotated
+
+from src.task.schemas import Task
 
 
 class AssignPermission(BaseModel):
@@ -15,24 +16,28 @@ class CreatePermission(BaseModel):
     codename: str
 
 
-class User(BaseModel):
+class UserNameMixin(BaseModel):
+    username: Annotated[str, Field(pattern=r'^[A-Za-z1-9_-]+$', min_length=4, max_length=50)]
+
+
+class PasswordMixin(BaseModel):
+    password: Annotated[str, Field(pattern=r'^[A-Za-z1-9]+$', min_length=8, max_length=30)]
+
+
+class EmailMixin(BaseModel):
+    email: EmailStr
+
+
+class UserCreate(UserNameMixin, EmailMixin, PasswordMixin):
+    pass
+
+
+class User(UserNameMixin, EmailMixin):
     id: UUID | None = None
-    username: Annotated[str, Field(pattern=r'^[A-Za-z1-9_-]+$', min_length=6,
-                                   max_length=50), None] = None
-    email: EmailStr | None = None
-    first_name: Annotated[str, Field(max_length=30)]
-    last_name: Annotated[str, Field(max_length=30)]
+    first_name: Annotated[str, Field(max_length=30)] | None = None
+    last_name: Annotated[str, Field(max_length=30)] | None = None
     is_superuser: bool = False
     created_at: datetime
     updated_at: datetime
     permissions: list[AssignPermission]
-
-
-class UserCreate(User):
-    password: Annotated[str, Field(pattern=r'^[A-Za-z1-9]+$', min_length=2, max_length=30)]
-
-
-
-
-
-
+    tasks: list[Task]

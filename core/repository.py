@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import List, Optional, Annotated
 from uuid import UUID
 
 from sqlalchemy import delete, insert
@@ -45,7 +45,7 @@ class AbstractRepository(ABC):
 
 
 class BaseRepository[AlchemyModel: Base](AbstractRepository):
-    model: AlchemyModel = None
+    model: Base = None
 
     def __init__(self, db_session: AsyncSession):
         self.db_session = db_session

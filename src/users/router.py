@@ -15,20 +15,19 @@ protected_router = APIRouter(tags=['Protected Router'])
 
 protected_router.add_api_route('/user/me', auth_service.get_current_user, response_model=User)
 
-
-@user_router.get('/user', response_model=list[User])
-async def all():
-    return await user_service.all()
+# TODO permissions ??
 
 
 @user_router.post('/user', response_model=User)
 async def create_user(user: UserCreate, perm: Annotated[is_admin, Depends()]):
-    new_user = await user_service.create(user.model_dump())
-    return new_user
+    return await user_service.create(user.model_dump())
+
+
+@user_router.get('/user', response_model=list[User])
+async def get_all():
+    return await user_service.all()
 
 
 @protected_router.get('/user/{pk}', response_model=User)
-async def get_user_retrive(pk: UUID, perm: Annotated[is_admin, Depends()]):
+async def get_user_retrieve(pk: UUID, perm: Annotated[is_admin, Depends()]):
     return await user_service.get_one(id=pk)
-
-

@@ -14,7 +14,7 @@ from src.users.service import user_service
 
 oauth2 = OAuth2PasswordBearer(tokenUrl="/login")
 
-type Token = Annotated[str, Depends(oauth2)]  # TODO проверить
+type Token = Annotated[str, Depends(oauth2)]  # todo проверить
 
 
 class AuthService[Service: BaseService]:

@@ -16,9 +16,9 @@ class User(Base):
         String(length=50), unique=True, nullable=False, index=True
     )
     password: Mapped[str] = mapped_column(String(length=30), nullable=False)
-    first_name: Mapped[str] = mapped_column(String(length=30), nullable=False)
-    last_name: Mapped[str] = mapped_column(String(length=30), nullable=False)
-    email: Mapped[EmailStr] = mapped_column(String, unique=True, nullable=True, index=True)
+    first_name: Mapped[str] = mapped_column(String(length=30), nullable=True)
+    last_name: Mapped[str] = mapped_column(String(length=30), nullable=True)
+    email: Mapped[EmailStr] = mapped_column(String, unique=True, nullable=False, index=True)
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), index=True
