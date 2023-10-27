@@ -1,16 +1,60 @@
+from uuid import UUID
+
+from fastapi import WebSocket, WebSocketDisconnect, Depends, HTTPException
+from starlette.status import HTTP_400_BAD_REQUEST
+
+from core.errors import AlreadyExistError
 from core.service import BaseService
-from src.users.models import User
-from src.users.repository import user_repository
+from src.auth.service import auth_service
+from src.task.repository import task_repository
+from core.service import PyModel
+from src.task.schemas import TaskCreate, TaskUpdate
 
 
-class UserService(BaseService):
-    async def get_user_by_credentials(self, login: str) -> User:
-        if "@" in login:
-            return await self.repository.get_one(email=login)
-        else:
-            return await self.repository.get_one(username=login)
+class TaskService(BaseService):
+    def __init__(self, *args, **kwargs):
+        self.active_connections: set[WebSocket] = set()
+        super().__init__(*args, **kwargs)
+
+    async def websocket_endpoint(self, client_id: UUID, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.add(websocket)
+        try:
+            while True:
+                message = await websocket.receive_text()
+                for connection in self.active_connections:
+                    await connection.send_text(f'Client with {client_id} wrote {message}!')
+        except WebSocketDisconnect:
+            self.active_connections.remove(websocket)
+
+    async def create(
+            self, model: TaskCreate, owner_id: UUID = Depends(auth_service.get_user_id_by_token)
+    ):
+        data = model.model_dump()
+        data.update({"owner_id": owner_id})
+        try:
+            db_task = await self.repository.create(data)
+        except AlreadyExistError as e:
+            raise HTTPException(HTTP_400_BAD_REQUEST, str(e))
+
+        for connection in self.active_connections:
+            await connection.send_text(f'New task created: {db_task.title}')
+        return db_task
+
+    async def all(self, skip: int = 0, limit: int = 10):
+        return await self.repository.filter(offset=skip, limit=limit)
+
+    async def update_task(self, task_id: UUID, task_update: TaskUpdate):
+        task = await self.update(task_id, task_update)
+        for connection in self.active_connections:
+            await connection.send_text(f'Task {task.id} updated')
+        return task
+
+    async def delete_task(self, task_id: UUID):
+        task = await self.delete(task_id)
+        for connection in self.active_connections:
+            await connection.send_text(f'Task {task.id} deleted')
+        return task
 
 
-user_service = UserService(repository=user_repository)
-
-# todo login by username or email
+task_service = TaskService(repository=task_repository)

@@ -33,9 +33,11 @@ class BaseService:
 
     async def update(self, pk: UUID, model: PyModel):
         try:
-            return await self.repository.update(pk, model.model_dump())
+            return await self.repository.update_one(pk, model.model_dump())
         except NoRowsFoundError as e:
             raise HTTPException(HTTP_404_NOT_FOUND, str(e))
+        except (DBError, AlreadyExistError) as e:
+            raise HTTPException(HTTP_400_BAD_REQUEST, str(e))
 
     async def retrieve(self, pk: UUID):
         try:

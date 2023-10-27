@@ -33,9 +33,17 @@ class AuthService[Service: BaseService]:
         raise HTTPException(HTTP_401_UNAUTHORIZED, 'Unauthorized')
 
     @staticmethod
-    async def get_current_user_permissions_from_token(token: Annotated[str, Depends(oauth2)]) -> list | HTTPException:
+    async def get_current_user_permissions_from_token(token: Annotated[str, Depends(oauth2)]) -> list | HTTPException:  # todo rename get_user_permissions_by_token
         if data := token_service.decode_token_or_none(token):
             return data['user_permissions']
+        raise HTTPException(HTTP_401_UNAUTHORIZED, 'Unauthorized')
+
+    @staticmethod
+    async def get_user_id_by_token(
+            token: Annotated[str, Depends(oauth2)]
+    ) -> list | HTTPException:
+        if data := token_service.decode_token_or_none(token):
+            return data['user_id']
         raise HTTPException(HTTP_401_UNAUTHORIZED, 'Unauthorized')
 
 
