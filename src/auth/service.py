@@ -9,16 +9,16 @@ from core.service import BaseService
 from src.auth.schemas import LoginUser
 from src.users.errors import ValidationError
 from src.users.schemas import User, UserCreate
-from src.users.service import user_service as us
+from src.users.service import user_service
 
 
 oauth2 = OAuth2PasswordBearer(tokenUrl="/login")
-type Token = Annotated[str, Depends(oauth2)]
-token = Annotated[str, Depends(oauth2)]
+
+type Token = Annotated[str, Depends(oauth2)]  # TODO проверить
 
 
-class AuthService[UserService: BaseService]:
-    def __init__(self, user_service: UserService):
+class AuthService[Service: BaseService]:
+    def __init__(self, user_service: Service):
         self.user_service = user_service
 
     async def login_user(self, model: LoginUser):
@@ -32,10 +32,11 @@ class AuthService[UserService: BaseService]:
             return await self.user_service.get_one(id=data['user_id'])
         raise HTTPException(HTTP_401_UNAUTHORIZED, 'Unauthorized')
 
-    async def get_current_user_permissions_from_token(self, token: Annotated[str, Depends(oauth2)]) -> list | HTTPException:
+    @staticmethod
+    async def get_current_user_permissions_from_token(token: Annotated[str, Depends(oauth2)]) -> list | HTTPException:
         if data := token_service.decode_token_or_none(token):
             return data['user_permissions']
         raise HTTPException(HTTP_401_UNAUTHORIZED, 'Unauthorized')
 
 
-auth_service = AuthService(us)
+auth_service = AuthService(user_service)

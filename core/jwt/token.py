@@ -8,6 +8,8 @@ from core.jwt.base import AbstractToken
 from core.errors import TokenError
 from src.users.schemas import User
 
+# todo refresh token?
+
 
 class TokenService(AbstractToken):
     secret_key = settings.secret_key
