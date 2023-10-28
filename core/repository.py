@@ -36,11 +36,11 @@ class AbstractRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def update(self, **kwargs):
+    async def update(self, pk: UUID, data: dict):
         raise NotImplementedError
 
     @abstractmethod
-    async def delete_one(self, pk: UUID, **kwargs):
+    async def delete_one(self, pk: UUID):
         raise NotImplementedError
 
 
@@ -52,38 +52,49 @@ class BaseRepository[AlchemyModel: Base](AbstractRepository):
     async def create(self, data: dict) -> AlchemyModel:
         async with self.db_session() as session:
             stmt = insert(self.model).values(**data).returning(self.model)
-            res = await session.execute(stmt)
             try:
+                res = await session.execute(stmt)
                 await session.commit()
             except IntegrityError:
                 raise AlreadyExistError(
-                    f"object {self.model.__name__} already exist or no related tables with it"
+                    f'object {self.model.__name__} already exist or no related tables with it'
                 )
             return res.scalar_one()
 
-    async def update(self, id: UUID, data: dict):
+    async def update(self, pk: UUID, data: dict):
         async with self.db_session() as session:
             if not data:
                 raise DBError(
-                    f"Passed empty dictionary for update method in model {self.model.__name__}"
+                    f'Passed empty dictionary for update method in model {self.model.__name__}'
                 )
-            stmt = update(self.model).values(**data).filter_by(id=id).returning(self.model.id)
             try:
-                await session.commit()
-                await session.refresh(item)
-            except IntegrityError:
-                raise AlreadyExistError(
-                    f"object {self.model.__name__} already exist or no related tables with it"
-                )
+                row = await session.execute(select(self.model).filter_by(id=pk))
+                item = row.scalar_one()
+            except NoResultFound:
+                raise NoRowsFoundError(f'For model {self.model.__name__} with id: {pk}')
+            except DBAPIError as e:
+                raise DBError(str(e))
+
+            for key, value in data.items():
+                if not hasattr(item, key):
+                    raise DBError(f'Field {key} not exists in {self.model.__name__}')
+                setattr(item, key, value)
+                try:
+                    await session.commit()
+                    await session.refresh(item)
+                except IntegrityError:
+                    raise AlreadyExistError(
+                        f'object {self.model.__name__} already exist or no related tables with it'
+                    )
             return item
 
-    async def delete_one(self, id: UUID):
+    async def delete_one(self, pk: UUID):
         async with self.db_session() as session:
-            stmt = delete(self.model).where(self.model.id == id)
+            stmt = delete(self.model).where(self.model.id == pk)
             result = await session.execute(stmt)
             if result.rowcount == 0:
                 raise NoRowsFoundError(
-                    f'Not found for model {self.model.__name__} with id: {id}'
+                    f'Not found for model {self.model.__name__} with id: {pk}'
                 )
             await session.commit()
             return

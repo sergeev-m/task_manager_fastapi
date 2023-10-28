@@ -3,8 +3,6 @@ from uuid import UUID
 from pydantic import BaseModel, EmailStr, Field
 from typing import Annotated
 
-# from src.task.schemas import Task
-
 
 class AssignPermission(BaseModel):
     codename: str

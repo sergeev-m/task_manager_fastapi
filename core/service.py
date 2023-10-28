@@ -27,13 +27,13 @@ class BaseService:
 
     async def delete(self, pk: UUID):
         try:
-            return await self.repository.delete_one(id=pk)
+            return await self.repository.delete_one(pk)
         except NoRowsFoundError as e:
             raise HTTPException(HTTP_404_NOT_FOUND, str(e))
 
     async def update(self, pk: UUID, model: PyModel):
         try:
-            return await self.repository.update_one(pk, model.model_dump())
+            return await self.repository.update(pk, model.model_dump())
         except NoRowsFoundError as e:
             raise HTTPException(HTTP_404_NOT_FOUND, str(e))
         except (DBError, AlreadyExistError) as e:

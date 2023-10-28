@@ -40,3 +40,5 @@ is_authenticated = Permission({'is_authenticated'})
 
 def allow_any():
     pass
+
+# todo доделать

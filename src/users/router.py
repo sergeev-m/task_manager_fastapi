@@ -1,30 +1,16 @@
-from typing import Annotated
+from fastapi import APIRouter
 
-from fastapi import APIRouter, Depends
-from uuid import UUID
+from src.users.schemas import User
+from src.users.service import user_service
+from src.auth.service import auth_service
 
-from core.jwt.token import token_service
-from src.users.schemas import UserCreate, User
-from src.users.service import UserService, user_service
-from src.auth.service import auth_service, AuthService, oauth2
-from src.users.permissions import is_admin, is_user, is_authenticated
 
 user_router = APIRouter(tags=['User'])
 
 
-# TODO permissions ??
-
-
-user_router.add_api_route('/register/', user_service.create_user, response_model=User, methods={'post'})
-
-user_router.add_api_route('/about_me/', auth_service.get_current_user, response_model=User, methods={'get'})
-
-
-# @user_router.get('/user', response_model=list[User])
-# async def get_all():
-#     return await user_service.all()
-
-
-# @protected_router.get('/user/{pk}', response_model=User)
-# async def get_user_retrieve(pk: UUID, perm: Annotated[is_admin, Depends()]):
-#     return await user_service.get_one(id=pk)
+user_router.add_api_route(
+    '/register/', user_service.create_user, response_model=User, methods={'post'}
+)
+user_router.add_api_route(
+    '/about_me/', auth_service.get_current_user, response_model=User, methods={'get'}
+)
