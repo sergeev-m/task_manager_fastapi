@@ -6,7 +6,7 @@ from sqlalchemy import delete, insert, update
 from sqlalchemy.exc import (
     IntegrityError,
     MultipleResultsFound,
-    NoResultFound,
+    NoResultFound, DBAPIError,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -51,7 +51,7 @@ class BaseRepository[AlchemyModel: Base](AbstractRepository):
 
     async def create(self, data: dict) -> AlchemyModel:
         async with self.db_session() as session:
-            stmt = insert(self.model).values(**data).returning(self.model.id)
+            stmt = insert(self.model).values(**data).returning(self.model)
             res = await session.execute(stmt)
             try:
                 await session.commit()
@@ -76,13 +76,19 @@ class BaseRepository[AlchemyModel: Base](AbstractRepository):
     #             )
     #         return res.scalar_one()
 
-    async def update_one(self, pk: UUID, data: dict):
+    async def update(self, pk: UUID, data: dict):
         async with self.db_session() as session:
             if not data:
                 raise DBError(
                     f"Passed empty dictionary for update method in model {self.model.__name__}"
                 )
-            item = self.get_one(id=pk)
+            try:
+                row = await session.execute(select(self.model).filter_by(id=pk))
+                item = row.scalar_one()
+            except NoResultFound:
+                raise NoRowsFoundError(f"For model {self.model.__name__} with id: {pk}")
+            except DBAPIError as e:
+                raise DBError(str(e))
             for key, value in data.items():
                 if not hasattr(item, key):
                     raise DBError(f"Field {key} not exists in {self.model.__name__}")
@@ -99,13 +105,13 @@ class BaseRepository[AlchemyModel: Base](AbstractRepository):
     async def delete_one(self, id: UUID):
         async with self.db_session() as session:
             stmt = delete(self.model).where(self.model.id == id)
-            result = await self.session.execute(stmt)
+            result = await session.execute(stmt)
             if result.rowcount == 0:
                 raise NoRowsFoundError(
-                    f'For model {self.model.__name__} with id: {id}'
+                    f'Not found for model {self.model.__name__} with id: {id}'
                 )
             await session.commit()
-            return result  #  todo check result
+            return
 
     async def filter(
         self,

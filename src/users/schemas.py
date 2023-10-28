@@ -3,7 +3,7 @@ from uuid import UUID
 from pydantic import BaseModel, EmailStr, Field
 from typing import Annotated
 
-from src.task.schemas import Task
+# from src.task.schemas import Task
 
 
 class AssignPermission(BaseModel):
@@ -16,23 +16,23 @@ class CreatePermission(BaseModel):
     codename: str
 
 
-class UserNameMixin(BaseModel):
+class UserNameMixin:
     username: Annotated[str, Field(pattern=r'^[A-Za-z1-9_-]+$', min_length=4, max_length=50)]
 
 
-class PasswordMixin(BaseModel):
+class PasswordMixin:
     password: Annotated[str, Field(pattern=r'^[A-Za-z1-9]+$', min_length=8, max_length=30)]
 
 
-class EmailMixin(BaseModel):
+class EmailMixin:
     email: EmailStr
 
 
-class UserCreate(UserNameMixin, EmailMixin, PasswordMixin):
+class UserCreate(BaseModel, UserNameMixin, EmailMixin, PasswordMixin):
     pass
 
 
-class User(UserNameMixin, EmailMixin):
+class User(BaseModel, UserNameMixin, EmailMixin):
     id: UUID | None = None
     first_name: Annotated[str, Field(max_length=30)] | None = None
     last_name: Annotated[str, Field(max_length=30)] | None = None
@@ -40,4 +40,4 @@ class User(UserNameMixin, EmailMixin):
     created_at: datetime
     updated_at: datetime
     permissions: list[AssignPermission]
-    tasks: list[Task]
+    # tasks: list[Task]

@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from fastapi import WebSocket, WebSocketDisconnect, Depends, HTTPException
-from starlette.status import HTTP_400_BAD_REQUEST
+from starlette.status import HTTP_400_BAD_REQUEST, HTTP_204_NO_CONTENT
 
 from core.errors import AlreadyExistError
 from core.service import BaseService
@@ -51,10 +51,13 @@ class TaskService(BaseService):
         return task
 
     async def delete_task(self, task_id: UUID):
-        task = await self.delete(task_id)
+        await self.delete(task_id)
         for connection in self.active_connections:
-            await connection.send_text(f'Task {task.id} deleted')
-        return task
+            await connection.send_text(f'Task {task_id} deleted')
+        return
+
+    async def get_one(self, task_id: UUID):
+        return await self.retrieve(task_id)
 
 
 task_service = TaskService(repository=task_repository)

@@ -7,7 +7,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
 
 from core.models import Base
-from src.task.models import Task
+# from src.task.models import Task
 # from src.users.utils.password_hash import Password TODO hash pass
 
 
@@ -27,7 +27,7 @@ class User(Base):
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
     permissions: Mapped[List['UserPermission']] = relationship('UserPermission', lazy='selectin')
-    tasks: Mapped[Task] = relationship(Task, back_populates='owner')
+    tasks: Mapped[list['Task']] = relationship('Task', back_populates='owner')
 
     # @validates("password")
     # def _validate_password(self, key, password):

@@ -9,7 +9,7 @@ from core.service import BaseService
 from src.auth.schemas import LoginUser
 from src.users.errors import ValidationError
 from src.users.schemas import User, UserCreate
-from src.users.service import user_service
+from src.users.service import user_service as us, UserService
 
 
 oauth2 = OAuth2PasswordBearer(tokenUrl="/login")
@@ -17,19 +17,19 @@ oauth2 = OAuth2PasswordBearer(tokenUrl="/login")
 type Token = Annotated[str, Depends(oauth2)]  # todo проверить
 
 
-class AuthService[Service: BaseService]:
-    def __init__(self, user_service: Service):
+class AuthService:
+    def __init__(self, user_service: UserService):
         self.user_service = user_service
 
     async def login_user(self, model: LoginUser):
-        user = await self.user_service.get_user_by_credentials(model.username)
+        user = await self.user_service.get_user_by_credentials(model.email)
         if user.password != model.password:
             raise ValidationError('Invalid password')
         return token_service.create_tokens(user)
 
     async def get_current_user(self, token: Annotated[str, Depends(oauth2)]):
         if data := token_service.decode_token_or_none(token):
-            return await self.user_service.get_one(id=data['user_id'])
+            return await self.user_service.retrieve(pk=data['user_id'])
         raise HTTPException(HTTP_401_UNAUTHORIZED, 'Unauthorized')
 
     @staticmethod
@@ -47,4 +47,4 @@ class AuthService[Service: BaseService]:
         raise HTTPException(HTTP_401_UNAUTHORIZED, 'Unauthorized')
 
 
-auth_service = AuthService(user_service)
+auth_service = AuthService(us)

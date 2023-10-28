@@ -3,7 +3,7 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 from typing import Annotated
 
-from src.users.schemas import User
+# from src.users.schemas import User
 
 
 class TaskCreate(BaseModel):
@@ -18,6 +18,6 @@ class TaskUpdate(TaskCreate):
 class Task(TaskUpdate):
     id: UUID
     owner_id: UUID
-    owner: list[User]
+    # owner: list[User]
     created_at: datetime
     updated_at: datetime

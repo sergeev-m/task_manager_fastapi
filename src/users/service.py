@@ -1,14 +1,24 @@
+from fastapi import HTTPException
+from starlette.status import HTTP_404_NOT_FOUND, HTTP_401_UNAUTHORIZED
+from core.errors import NoRowsFoundError, MultipleRowsFoundError
 from core.service import BaseService
 from src.users.models import User
 from src.users.repository import user_repository
+from src.users.schemas import UserCreate
 
 
 class UserService(BaseService):
     async def get_user_by_credentials(self, login: str) -> User:
-        if "@" in login:
-            return await self.repository.get_one(email=login)
-        else:
-            return await self.repository.get_one(username=login)
+        try:
+            if "@" in login:
+                return await self.repository.get_one(email=login)
+            else:
+                return await self.repository.get_one(username=login)
+        except (NoRowsFoundError, MultipleRowsFoundError):
+            raise HTTPException(HTTP_401_UNAUTHORIZED, 'Invalid credentials')
+
+    async def create_user(self, user: UserCreate):
+        return await self.create(user)
 
 
 user_service = UserService(repository=user_repository)
