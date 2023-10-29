@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional, Annotated, NewType, Generator, Callable
+from typing import Callable
 from uuid import UUID
 
-from sqlalchemy import delete, insert, update
+from sqlalchemy import delete, insert
 from sqlalchemy.exc import (
     IntegrityError,
     MultipleResultsFound,
@@ -11,13 +11,13 @@ from sqlalchemy.exc import (
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from core.errors import (
+from src.core.errors import (
     AlreadyExistError,
     DBError,
     MultipleRowsFoundError,
     NoRowsFoundError
 )
-from core.models import Base
+from src.core.models import Base
 
 
 class AbstractRepository(ABC):
@@ -57,7 +57,7 @@ class BaseRepository[AlchemyModel: Base](AbstractRepository):
                 await session.commit()
             except IntegrityError:
                 raise AlreadyExistError(
-                    f'object {self.model.__name__} already exist or no related tables with it'
+                    f'object {self.model.__name__} already exist'
                 )
             return res.scalar_one()
 
@@ -84,7 +84,7 @@ class BaseRepository[AlchemyModel: Base](AbstractRepository):
                     await session.refresh(item)
                 except IntegrityError:
                     raise AlreadyExistError(
-                        f'object {self.model.__name__} already exist or no related tables with it'
+                        f'object {self.model.__name__} already exist'
                     )
             return item
 

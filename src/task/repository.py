@@ -1,5 +1,5 @@
-from core.db.session import AsyncDatabaseSession
-from core.repository import BaseRepository
+from src.core.db.session import AsyncDatabaseSession
+from src.core.repository import BaseRepository
 from src.task.models import Task
 
 

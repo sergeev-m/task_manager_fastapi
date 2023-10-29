@@ -1,7 +1,3 @@
-from pydantic.dataclasses import dataclass
-
-
-# @dataclass
 class CustomError(Exception):
     def __init__(self, status_code: int | None, detail):
         self.detail: str = detail
@@ -9,21 +5,21 @@ class CustomError(Exception):
         super().__init__(detail)
 
 
-class AlreadyExistError(Exception):
+class AlreadyExistError(CustomError):
     pass
 
 
-class DBError(Exception):
+class DBError(CustomError):
     pass
 
 
-class NoRowsFoundError(Exception):
+class NoRowsFoundError(CustomError):
     pass
 
 
-class MultipleRowsFoundError(Exception):
+class MultipleRowsFoundError(CustomError):
     pass
 
 
-class TokenError(Exception):
+class TokenError(CustomError):
     pass

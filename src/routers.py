@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 
-from core.config.settings import settings
+from src.core.config.settings import settings
 from src.users.router import router as user_router
 from src.auth.router import router as auth_router
 from src.task.router import router as task_router, websocket_router as ws_task_router

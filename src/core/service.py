@@ -4,13 +4,14 @@ from starlette.status import HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST
 from typing import NewType
 from pydantic import BaseModel
 
-from core.errors import (
+from src.core.errors import (
     AlreadyExistError,
     DBError,
     MultipleRowsFoundError,
     NoRowsFoundError,
 )
-from core.repository import BaseRepository
+from src.core.repository import BaseRepository
+
 
 PyModel = NewType('PyModel', BaseModel)
 

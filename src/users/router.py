@@ -1,7 +1,6 @@
 from fastapi import APIRouter
 from starlette.status import HTTP_201_CREATED
 
-from core.log import log
 from src.users.schemas import User
 from src.users.service import user_service
 from src.auth.service import auth_service

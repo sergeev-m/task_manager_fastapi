@@ -1,11 +1,11 @@
 from fastapi import FastAPI, Request
 from starlette.responses import JSONResponse
 
-from core.log import log
+from src.core.log import log
 from src.routers import v1
-from core.middleware.access_middleware import AccessMiddleware
-from core.config.settings import settings
-from core.errors import CustomError
+from src.core.middleware.access_middleware import AccessMiddleware
+from src.core.config.settings import settings
+from src.core.errors import CustomError
 
 
 def register_app():

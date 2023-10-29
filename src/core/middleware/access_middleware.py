@@ -2,7 +2,7 @@ from fastapi import Request, Response
 from datetime import datetime
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
-from core.log import log
+from src.core.log import log
 
 
 class AccessMiddleware(BaseHTTPMiddleware):

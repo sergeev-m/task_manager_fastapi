@@ -3,7 +3,7 @@ from sqlalchemy import String, ForeignKey, DateTime, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from core.models import Base
+from src.core.models import Base
 
 
 class Task(Base):

@@ -4,7 +4,7 @@ from pathlib import Path
 from pydantic_settings import BaseSettings
 
 
-BASE_PATH = Path(__file__).resolve().parent.parent.parent
+BASE_PATH = Path(__file__).resolve().parent.parent.parent.parent
 LOG_PATH = os.path.join(BASE_PATH, 'logs')
 
 

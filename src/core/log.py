@@ -3,7 +3,7 @@ import os
 
 from logging import Logger, handlers
 
-from core.config.settings import settings, LOG_PATH
+from src.core.config.settings import settings, LOG_PATH
 
 
 def get_log() -> Logger:

@@ -1,17 +1,13 @@
 from datetime import datetime, timedelta, UTC
-
 from jwt import ExpiredSignatureError, PyJWTError, decode, encode
 
-from core.config.jwt import config_token
-from core.config.settings import settings
-from core.jwt.base import AbstractToken
-from core.errors import TokenError
+from src.core.config.jwt import config_token
+from src.core.config.settings import settings
+from src.core.errors import TokenError
 from src.users.schemas import User
 
-# todo refresh token?
 
-
-class TokenService(AbstractToken):
+class TokenService:
     secret_key = settings.SECRET_KEY
     algorithm = config_token.ALGORITHM
     access_token_lifetime = config_token.ACCESS_TOKEN_LIFETIME

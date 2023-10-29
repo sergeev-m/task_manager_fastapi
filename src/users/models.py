@@ -3,10 +3,9 @@ from typing import List
 from pydantic import EmailStr
 from sqlalchemy import Boolean, DateTime, ForeignKey, String, func, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import Mapped, mapped_column, relationship, validates
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from core.models import Base
-# from src.users.utils.password_hash import Password TODO hash pass
+from src.core.models import Base
 
 
 class User(Base):
@@ -26,11 +25,6 @@ class User(Base):
     )
     permissions: Mapped[List['UserPermission']] = relationship('UserPermission', lazy='selectin')
     tasks: Mapped[list['Task']] = relationship('Task', back_populates='owner')
-
-    # @validates("password")
-    # def _validate_password(self, key, password):
-    #     password_field = getattr(type(self), key)
-    #     return password_field.type.validator(password)
 
 
 class Permission(Base):

@@ -1,4 +1,4 @@
-from core.errors import CustomError
+from src.core.errors import CustomError
 
 
 class ValidationError(CustomError):

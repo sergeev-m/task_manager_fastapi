@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordBearer
 from starlette.status import HTTP_401_UNAUTHORIZED, HTTP_400_BAD_REQUEST
 from passlib.hash import argon2
 
-from core.jwt.token import token_service
+from src.core.jwt.token import token_service
 from src.auth.schemas import LoginUser
 from src.users.errors import ValidationError
 from src.users.service import user_service as us, UserService
@@ -29,7 +29,7 @@ class AuthService:
         raise HTTPException(HTTP_401_UNAUTHORIZED, 'Unauthorized')
 
     @staticmethod
-    async def get_current_user_permissions_from_token(token: Annotated[str, Depends(oauth2)]) -> list | HTTPException:  # todo rename get_user_permissions_by_token
+    async def get_current_user_permissions_by_token(token: Annotated[str, Depends(oauth2)]) -> list:
         if data := token_service.decode_token_or_none(token):
             return data['user_permissions']
         raise HTTPException(HTTP_401_UNAUTHORIZED, 'Unauthorized')

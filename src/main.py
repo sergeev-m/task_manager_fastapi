@@ -1,10 +1,8 @@
+from src.core.log import log
+from src.core.registar import register_app
 
-from core.log import log
-from core.registar import register_app
 
 app = register_app()
-
-
 
 
 @app.on_event("startup")

@@ -2,8 +2,8 @@ from fastapi import HTTPException
 from starlette.status import HTTP_401_UNAUTHORIZED
 from passlib.hash import argon2
 
-from core.errors import NoRowsFoundError, MultipleRowsFoundError
-from core.service import BaseService
+from src.core.errors import NoRowsFoundError, MultipleRowsFoundError
+from src.core.service import BaseService
 from src.users.repository import user_repository
 from src.users.schemas import UserCreate
 

@@ -2,8 +2,8 @@ from uuid import UUID
 from fastapi import WebSocket, WebSocketDisconnect, Depends, HTTPException
 from starlette.status import HTTP_400_BAD_REQUEST
 
-from core.errors import AlreadyExistError
-from core.service import BaseService
+from src.core.errors import AlreadyExistError
+from src.core.service import BaseService
 from src.auth.service import auth_service
 from src.task.repository import task_repository
 from src.task.schemas import TaskCreate, TaskUpdate
