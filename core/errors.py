@@ -1,27 +1,29 @@
 from pydantic.dataclasses import dataclass
 
 
-@dataclass
+# @dataclass
 class CustomError(Exception):
-    error_message: str
-    status_code: int | None = 500
+    def __init__(self, status_code: int | None, detail):
+        self.detail: str = detail
+        self.status_code: int | None = status_code
+        super().__init__(detail)
 
 
-class AlreadyExistError(CustomError):
+class AlreadyExistError(Exception):
     pass
 
 
-class DBError(CustomError):
+class DBError(Exception):
     pass
 
 
-class NoRowsFoundError(CustomError):
+class NoRowsFoundError(Exception):
     pass
 
 
-class MultipleRowsFoundError(CustomError):
+class MultipleRowsFoundError(Exception):
     pass
 
 
-class TokenError(CustomError):
+class TokenError(Exception):
     pass

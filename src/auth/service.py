@@ -1,7 +1,8 @@
 from typing import Annotated
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
-from starlette.status import HTTP_401_UNAUTHORIZED
+from starlette.status import HTTP_401_UNAUTHORIZED, HTTP_400_BAD_REQUEST
+from passlib.hash import argon2
 
 from core.jwt.token import token_service
 from src.auth.schemas import LoginUser
@@ -18,8 +19,8 @@ class AuthService:
 
     async def login_user(self, model: LoginUser):
         user = await self.user_service.get_user_by_credentials(model.email)
-        if user.password != model.password:
-            raise ValidationError('Invalid password')
+        if not argon2.verify(model.password, user.password):
+            raise ValidationError(HTTP_400_BAD_REQUEST, 'Invalid password')
         return token_service.create_tokens(user)
 
     async def get_current_user(self, token: Annotated[str, Depends(oauth2)]):

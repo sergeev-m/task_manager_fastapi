@@ -15,7 +15,7 @@ from core.errors import (
     AlreadyExistError,
     DBError,
     MultipleRowsFoundError,
-    NoRowsFoundError,
+    NoRowsFoundError
 )
 from core.models import Base
 

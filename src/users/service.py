@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 from starlette.status import HTTP_401_UNAUTHORIZED
+from passlib.hash import argon2
 
 from core.errors import NoRowsFoundError, MultipleRowsFoundError
 from core.service import BaseService
@@ -15,6 +16,7 @@ class UserService(BaseService):
             raise HTTPException(HTTP_401_UNAUTHORIZED, 'Invalid credentials')
 
     async def create_user(self, user: UserCreate):
+        user.password = argon2.hash(user.password)
         return await self.create(user)
 
 
