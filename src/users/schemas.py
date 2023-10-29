@@ -37,5 +37,3 @@ class User(BaseModel, UserNameMixin, EmailMixin):
     is_superuser: bool = False
     created_at: datetime
     updated_at: datetime
-    permissions: list[AssignPermission]
-    # tasks: list[Task]

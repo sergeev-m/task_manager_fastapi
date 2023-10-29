@@ -12,7 +12,7 @@ from src.users.schemas import User
 
 
 class TokenService(AbstractToken):
-    secret_key = settings.secret_key
+    secret_key = settings.SECRET_KEY
     algorithm = config_token.ALGORITHM
     access_token_lifetime = config_token.ACCESS_TOKEN_LIFETIME
     refresh_token_lifetime = config_token.REFRESH_TOKEN_LIFETIME

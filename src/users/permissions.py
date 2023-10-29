@@ -34,6 +34,7 @@ is_user = Permission({"user"})
 is_admin = Permission({"admin"})
 is_authenticated = Permission({'is_authenticated'})
 
+
 # is_authenticated = auth_service.get_current_user_permissions_from_token and auth_service.get_current_user
 # is_authenticated = auth_service.get_current_user
 

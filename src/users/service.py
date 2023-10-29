@@ -3,13 +3,12 @@ from starlette.status import HTTP_401_UNAUTHORIZED
 
 from core.errors import NoRowsFoundError, MultipleRowsFoundError
 from core.service import BaseService
-from src.users.models import User
 from src.users.repository import user_repository
 from src.users.schemas import UserCreate
 
 
 class UserService(BaseService):
-    async def get_user_by_credentials(self, login: str) -> User:
+    async def get_user_by_credentials(self, login: str):
         try:
             return await self.repository.get_one(email=login)
         except (NoRowsFoundError, MultipleRowsFoundError):
