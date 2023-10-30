@@ -1,5 +1,2 @@
-from src.core.errors import CustomError
-
-
-class ValidationError(CustomError):
+class ValidationError(Exception):
     pass

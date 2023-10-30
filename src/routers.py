@@ -17,3 +17,5 @@ v1.include_router(ws_router, prefix='/ws')
 v1.include_router(auth_router, prefix='/auth', tags=['Auth'])
 v1.include_router(user_router, prefix='/users', tags=['User'])
 v1.include_router(task_router, prefix='/tasks', tags=['Task'])
+
+v1.add_api_route('/', lambda: [i.path for i in v1.__dict__['routes']])

@@ -5,7 +5,6 @@ from src.core.log import log
 from src.routers import v1
 from src.core.middleware.access_middleware import AccessMiddleware
 from src.core.config.settings import settings
-from src.core.errors import CustomError
 
 
 def register_app():
@@ -39,10 +38,10 @@ def register_exception(app: FastAPI):
             content={"error": "O-o-o-ps! Internal server error"}
         )
 
-    @app.exception_handler(CustomError)
-    async def custom_exception_handler_a(request: Request, exc: CustomError):
-        log.info(str(exc))
-        return JSONResponse(
-            status_code=exc.status_code,
-            content=exc.__dict__
-        )
+    # @app.exception_handler(CustomError)
+    # async def custom_exception_handler_a(request: Request, exc: CustomError):
+    #     log.info(str(exc))
+    #     return JSONResponse(
+    #         status_code=exc.status_code,
+    #         content=exc.__dict__
+    #     )

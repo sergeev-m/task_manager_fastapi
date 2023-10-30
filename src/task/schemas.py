@@ -6,7 +6,7 @@ from typing import Annotated
 
 class TaskCreate(BaseModel):
     title: Annotated[str, Field(max_length=50)]
-    description: str
+    description: str | None = None
 
 
 class TaskUpdate(TaskCreate):

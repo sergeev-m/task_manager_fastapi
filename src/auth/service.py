@@ -20,7 +20,7 @@ class AuthService:
     async def login_user(self, model: LoginUser):
         user = await self.user_service.get_user_by_credentials(model.email)
         if not argon2.verify(model.password, user.password):
-            raise ValidationError(HTTP_400_BAD_REQUEST, 'Invalid password')
+            raise ValidationError('Invalid password', HTTP_400_BAD_REQUEST)
         return token_service.create_tokens(user)
 
     async def get_current_user(self, token: Annotated[str, Depends(oauth2)]):

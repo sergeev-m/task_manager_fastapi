@@ -8,7 +8,7 @@ from src.core.models import Base
 
 class Task(Base):
     title: Mapped[str] = mapped_column(String(length=50), index=True)
-    description: Mapped[str] = mapped_column(index=True)
+    description: Mapped[str] = mapped_column(index=True, nullable=True)
     completed: Mapped[bool] = mapped_column(default=False)
     owner_id: Mapped[UUID] = mapped_column(UUID, ForeignKey('users_user.id'))
     owner: Mapped['User'] = relationship('User', back_populates="tasks")

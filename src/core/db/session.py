@@ -31,3 +31,6 @@ class AsyncDatabaseSession:
             raise
         finally:
             await session.close()
+
+
+db = AsyncDatabaseSession()
